@@ -6,7 +6,7 @@ use App\Actions\Billing\EstimateCost;
 use App\Support\Money;
 
 it('estimates typical and max user costs with markup', function () {
-    $estimate = (new EstimateCost)->handle(
+    $estimate = app(EstimateCost::class)->handle(
         str_repeat('a', 400),
         '1536x1024',
         'high',

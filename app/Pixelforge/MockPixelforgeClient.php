@@ -97,7 +97,10 @@ final class MockPixelforgeClient implements PixelforgeClient
     {
         return [
             'object' => 'pricing',
+            'currency' => 'usd',
+            'unit' => 'per_1m_tokens',
             'rates' => PricingCatalog::rates(),
+            'tokens' => PricingCatalog::tokens(),
         ];
     }
 

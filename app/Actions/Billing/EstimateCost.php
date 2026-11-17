@@ -4,14 +4,19 @@ declare(strict_types=1);
 
 namespace App\Actions\Billing;
 
-use App\Pixelforge\PricingCatalog;
+use App\Actions\Pixelforge\FetchPixelforgePricing;
 use App\Support\Money;
 use InvalidArgumentException;
 
 final class EstimateCost
 {
+    public function __construct(
+        private readonly FetchPixelforgePricing $fetchPixelforgePricing,
+    ) {}
+
     /**
      * @param  list<string>  $referenceImages
+     * @param  array{rates: array<string, string>, tokens: array<string, mixed>}|null  $pricing
      * @return array{
      *     estimated_provider_cost: string,
      *     estimated_user_cost: string,
@@ -19,12 +24,19 @@ final class EstimateCost
      *     estimated_user_cost_max: string,
      *     estimated_tokens: array{input_text: int, input_image: int, output: int, reasoning: int},
      *     max_tokens: array{input_text: int, input_image: int, output: int, reasoning: int},
+     *     rates: array<string, string>,
      * }
      */
-    public function handle(string $prompt, string $size, string $quality, array $referenceImages = []): array
-    {
-        $rates = PricingCatalog::rates();
-        $tokensConfig = PricingCatalog::tokens();
+    public function handle(
+        string $prompt,
+        string $size,
+        string $quality,
+        array $referenceImages = [],
+        ?array $pricing = null,
+    ): array {
+        $pricing ??= $this->fetchPixelforgePricing->handle();
+        $rates = $pricing['rates'];
+        $tokensConfig = $pricing['tokens'];
 
         if (! isset($tokensConfig['output'][$quality][$size])) {
             throw new InvalidArgumentException("Unsupported size/quality [{$size}/{$quality}].");
@@ -70,6 +82,7 @@ final class EstimateCost
             'estimated_user_cost_max' => Money::mul($maxProviderCost, $markup),
             'estimated_tokens' => $estimatedTokens,
             'max_tokens' => $maxTokens,
+            'rates' => $rates,
         ];
     }
 

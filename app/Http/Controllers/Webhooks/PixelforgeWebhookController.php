@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Webhooks;
 
-use App\Actions\Pixelforge\HandlePixelforgeWebhook;
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessPixelforgeWebhookJob;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 
 final class PixelforgeWebhookController extends Controller
 {
-    public function __invoke(Request $request, HandlePixelforgeWebhook $handler): Response
+    public function __invoke(Request $request): Response
     {
         /** @var array<string, mixed> $payload */
         $payload = $request->json()->all();
@@ -30,7 +30,7 @@ final class PixelforgeWebhookController extends Controller
             'delivery_attempt' => $request->header('Pixelforge-Delivery-Attempt'),
         ]);
 
-        $handler->handle($eventId, $type, $payload);
+        ProcessPixelforgeWebhookJob::dispatch($eventId, $type, $payload);
 
         return response()->noContent();
     }

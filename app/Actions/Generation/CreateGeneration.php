@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Actions\Generation;
 
 use App\Actions\Billing\EstimateCost;
+use App\Actions\Pixelforge\FetchPixelforgePricing;
 use App\Enums\GenerationStatus;
 use App\Jobs\ProcessGenerationJob;
 use App\Models\Generation;
 use App\Models\User;
-use App\Pixelforge\PricingCatalog;
 use App\Support\Money;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -20,6 +20,7 @@ final class CreateGeneration
 {
     public function __construct(
         private readonly EstimateCost $estimateCost,
+        private readonly FetchPixelforgePricing $fetchPixelforgePricing,
     ) {}
 
     /**
@@ -28,11 +29,13 @@ final class CreateGeneration
     public function handle(User $user, array $data): Generation
     {
         $referenceImages = array_values($data['reference_images'] ?? []);
+        $pricing = $this->fetchPixelforgePricing->handle();
         $estimate = $this->estimateCost->handle(
             $data['prompt'],
             $data['size'],
             $data['quality'],
             $referenceImages,
+            $pricing,
         );
 
         $generation = DB::transaction(function () use ($user, $data, $referenceImages, $estimate): Generation {
@@ -66,7 +69,7 @@ final class CreateGeneration
                 'estimated_provider_cost' => $estimate['estimated_provider_cost'],
                 'estimated_user_cost' => $estimate['estimated_user_cost'],
                 'estimated_user_cost_max' => $estimate['estimated_user_cost_max'],
-                'rates' => PricingCatalog::rates(),
+                'rates' => $estimate['rates'],
                 'pixelforge_id' => null,
             ]);
         });

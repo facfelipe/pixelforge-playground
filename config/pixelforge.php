@@ -40,4 +40,6 @@ return [
 
     'poll_max_attempts' => (int) env('PIXELFORGE_POLL_MAX_ATTEMPTS', 12),
 
+    'pricing_cache_seconds' => (int) env('PIXELFORGE_PRICING_CACHE', 300),
+
 ];

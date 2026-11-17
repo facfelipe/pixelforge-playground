@@ -56,7 +56,8 @@ QUEUE_CONNECTION=database
 - Mock driver: signed events into `HandlePixelforgeWebhook` → `ApplyPixelforgeGeneration` (same apply path as `POST /webhooks/pixelforge`)
 - `PollPixelforgeGenerationJob` as backup
 - Prompt keywords: `[fail]`, `[blocked]`, `[overloaded]`, `[duplicate]`, `[slow]`
-- Estimates still use `PricingCatalog` until wired to live `GET /v1/pricing`; actuals use the generation’s frozen `rates`
+- Estimates use cached `GET /v1/pricing` (fallback: `PricingCatalog`); actuals use the generation’s frozen `rates`
+- Verified webhooks are queued (`ProcessPixelforgeWebhookJob`) so the endpoint can 204 quickly
 
 ## Decisions
 
