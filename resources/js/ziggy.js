@@ -1,0 +1,5 @@
+const Ziggy = {"url":"http:\/\/pixelforge-playground.test","port":null,"defaults":{},"routes":{"sanctum.csrf-cookie":{"uri":"sanctum\/csrf-cookie","methods":["GET","HEAD"]},"studio":{"uri":"studio","methods":["GET","HEAD"]},"studio.store":{"uri":"studio","methods":["POST"]},"studio.estimate":{"uri":"studio\/estimate","methods":["POST"]},"credits.index":{"uri":"credits","methods":["GET","HEAD"]},"credits.store":{"uri":"credits","methods":["POST"]},"admin.report":{"uri":"admin","methods":["GET","HEAD"]},"register":{"uri":"register","methods":["GET","HEAD"]},"login":{"uri":"login","methods":["GET","HEAD"]},"logout":{"uri":"logout","methods":["POST"]},"storage.local":{"uri":"storage\/{path}","methods":["GET","HEAD"],"wheres":{"path":".*"},"parameters":["path"]},"storage.local.upload":{"uri":"storage\/{path}","methods":["PUT"],"wheres":{"path":".*"},"parameters":["path"]}}};
+if (typeof window !== 'undefined' && typeof window.Ziggy !== 'undefined') {
+  Object.assign(Ziggy.routes, window.Ziggy.routes);
+}
+export { Ziggy };
