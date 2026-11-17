@@ -2,7 +2,7 @@
 
 Small Laravel + Vue + Inertia app for async image generation against the Pixelforge API. Credits are a demo wallet (no real payments).
 
-Pixelforge HTTP is **mocked** today; the webhook verify → dedupe → apply → poll path is real. Live API is mostly `PIXELFORGE_DRIVER=http` + credentials + a public webhook URL.
+Provider access is a **driver switch**: `PIXELFORGE_DRIVER=mock` (default, offline/tests) or `http` (live API). Webhook verify → dedupe → apply and poll are the same either way.
 
 ## What’s in
 
@@ -35,13 +35,28 @@ Herd: http://pixelforge-playground.test
 php artisan test --compact
 ```
 
+### Live Pixelforge (optional)
+
+```env
+PIXELFORGE_DRIVER=http
+PIXELFORGE_API_KEY=pf_...
+PIXELFORGE_WEBHOOK_SECRET=whsec_...
+QUEUE_CONNECTION=database
+```
+
+1. Create a **local** API key in the Pixelforge dashboard (separate key later for production).
+2. Tunnel your site (e.g. `herd share`) and set endpoint  
+   `https://your-tunnel/webhooks/pixelforge`.
+3. Run a worker: `php artisan queue:work --tries=3`.
+4. Keep the tunnel + worker running while generating.
+
 ## Code shape
 
 - Local generation row first, then `ProcessGenerationJob` → `PixelforgeClient`
-- Mock client delivers signed events into `HandlePixelforgeWebhook` → `ApplyPixelforgeGeneration` (same as `POST /webhooks/pixelforge`)
+- Mock driver: signed events into `HandlePixelforgeWebhook` → `ApplyPixelforgeGeneration` (same apply path as `POST /webhooks/pixelforge`)
 - `PollPixelforgeGenerationJob` as backup
-- Mock keywords: `[fail]`, `[blocked]`, `[overloaded]`, `[duplicate]`, `[slow]`
-- Estimates/mock use `PricingCatalog` (docs snapshot); live path should use `GET /v1/pricing` + generation `rates`
+- Prompt keywords: `[fail]`, `[blocked]`, `[overloaded]`, `[duplicate]`, `[slow]`
+- Estimates still use `PricingCatalog` until wired to live `GET /v1/pricing`; actuals use the generation’s frozen `rates`
 
 ## Decisions
 
@@ -55,4 +70,4 @@ php artisan test --compact
 
 ## Next
 
-Real Pixelforge key, webhook tunnel, deploy, and reconcile admin provider totals with `GET /v1/usage`.
+Deploy with a **production** Pixelforge key + webhook URL, leave sample generations, and reconcile admin provider totals with `GET /v1/usage`.
