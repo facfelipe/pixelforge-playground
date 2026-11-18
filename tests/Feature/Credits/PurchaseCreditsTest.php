@@ -38,5 +38,7 @@ it('shows the credits page with balance and pack size', function () {
         ->assertInertia(fn ($page) => $page
             ->component('Credits')
             ->where('balance', '7.500000000')
-            ->where('pack', '5.000000000'));
+            ->where('balance_display', '7.50')
+            ->where('pack', '5.000000000')
+            ->where('pack_display', '5.00'));
 });

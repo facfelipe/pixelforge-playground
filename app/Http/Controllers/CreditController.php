@@ -17,9 +17,9 @@ class CreditController extends Controller
     {
         return Inertia::render('Credits', [
             'balance' => (string) $request->user()->credit_balance,
-            'balance_display' => Money::formatDisplay((string) $request->user()->credit_balance),
+            'balance_display' => Money::formatDisplay((string) $request->user()->credit_balance, 2),
             'pack' => (string) config('billing.credit_pack'),
-            'pack_display' => Money::formatDisplay((string) config('billing.credit_pack')),
+            'pack_display' => Money::formatDisplay((string) config('billing.credit_pack'), 2),
         ]);
     }
 

@@ -70,12 +70,16 @@ final class Money
     }
 
     /**
-     * UI-only formatting. Always 6 fractional digits so every screen matches.
+     * UI-only formatting. Default 6 places for generation costs; use 2 for wallet/pack CTAs.
      * Billing math stays at {@see SCALE} (9) — never use this for charges/gates.
      */
-    public static function formatDisplay(string $amount): string
+    public static function formatDisplay(string $amount, int $places = 6): string
     {
-        return self::roundHalfUp(self::normalize($amount), 6);
+        if ($places < 0) {
+            throw new InvalidArgumentException('Display places must be zero or greater.');
+        }
+
+        return self::roundHalfUp(self::normalize($amount), $places);
     }
 
     private static function roundHalfUp(string $amount, int $places): string

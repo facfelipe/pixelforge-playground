@@ -10,7 +10,7 @@ Provider access is a **driver switch**: `PIXELFORGE_DRIVER=mock` (default, offli
 
 - Estimate before submit (typical + **up to** / worst-case)
 - Charge **provider × 1.25** once on success; failures are **$0**
-- Exact money: `decimal(28,9)` + bcmath (UI shows 6 places)
+- Exact money: `decimal(28,9)` + bcmath (costs UI: 6 places; wallet/pack: 2)
 - Live status history with estimated, actual, and image
 - Webhooks: signature check, event-id dedupe, out-of-order safe
 - Poll fallback using the same apply path as webhooks

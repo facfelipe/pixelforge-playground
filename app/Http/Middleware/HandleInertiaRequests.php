@@ -32,7 +32,7 @@ class HandleInertiaRequests extends Middleware
                     'name' => $user->name,
                     'email' => $user->email,
                     'credit_balance' => (string) $user->credit_balance,
-                    'credit_balance_display' => Money::formatDisplay((string) $user->credit_balance),
+                    'credit_balance_display' => Money::formatDisplay((string) $user->credit_balance, 2),
                     'is_admin' => $user->isAdmin(),
                 ] : null,
             ],
